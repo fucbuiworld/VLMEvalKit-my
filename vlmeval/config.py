@@ -892,12 +892,20 @@ api_models = {
     ),
     'ernie4.5-a3b': partial(
         api.GPT4V,
-        model='ernie-4.5-vl-28b-a3b', 
+        model='ernie-4.5-turbo-20260402',
         temperature=0,
         retry=3, 
         max_tokens=8000,
     ),
-    "360zhinao3-vl":
+    'internvl3-38b-api': partial(
+        api.GPT4V,
+        model='internvl3-38b',
+        temperature=0,
+        retry=5,
+        max_tokens=4096,
+        key=os.environ.get('BAIDU_API_KEY', ''),
+    ), 
+  "360zhinao3-vl":
     partial(
         api.GPT4V,
         model="360zhinao3-vl",
@@ -1759,7 +1767,28 @@ deepseekocr_series = {
     "DeepSeek-OCR": partial(
         vlm.DeepSeekOCR, model_path="deepseek-ai/DeepSeek-OCR"
     ),
+    'DeepSeek-OCR-api': partial(
+        api.GPT4V,
+        model='deepseek-ocr',
+        temperature=0,
+        retry=5,
+        wait=10,
+        max_tokens=4096,
+        timeout=300,
+    ),
 }
+qianfan_ocr_series = {
+    'Qianfan-OCR-api': partial(
+        api.GPT4V,
+        model='qianfan-ocr',
+        temperature=0,
+        retry=5,
+        wait=10,
+        max_tokens=8192,
+        timeout=300,
+    ),
+}
+
 
 janus_series = {
     "Janus-1.3B": partial(vlm.Janus, model_path="deepseek-ai/Janus-1.3B"),
@@ -2307,7 +2336,16 @@ kimi_series = {
         max_tokens=32768,
         retry=6,
         timeout=1800,
-    )
+    ),
+        'Kimi-K2.6-api': partial(
+        api.GPT4V,
+        model='kimi-k2.6',       
+        temperature=0,
+        retry=5,                  
+        wait=5,                  
+        max_tokens=4096,          
+        timeout=300,               
+), 
 }
 
 flash_vl = {
@@ -2421,6 +2459,15 @@ qianfanvl_series = {
     'Qianfan-VL-3B': partial(vlm.Qianfan_VL, model_path='baidu/Qianfan-VL-3B'),
     'Qianfan-VL-8B': partial(vlm.Qianfan_VL, model_path='baidu/Qianfan-VL-8B'),
     'Qianfan-VL-70B': partial(vlm.Qianfan_VL, model_path='baidu/Qianfan-VL-70B'),
+    'Qianfan-VL-8B-api': partial(
+        api.GPT4V,
+        model='qianfan-vl-8b',       
+        temperature=0,
+        retry=5,
+        wait=10,
+        max_tokens=8192,             
+        timeout=300,
+    ),
 }
 
 lfm2vl_series = {
@@ -2636,7 +2683,7 @@ model_groups = [
     ross_series, emu_series, ola_series, ursa_series, gemma_series,
     long_vita_series, ristretto_series, kimi_series, aguvis_series, hawkvl_series,
     flash_vl, kimi_vllm_series, oryx_series, treevgr_series, varco_vision_series, qtunevl_series, 
-    xvl_series, thyme_series, logics_series, cosmos_series, keye_series, qianfanvl_series, 
+    xvl_series, thyme_series, logics_series, cosmos_series, keye_series, qianfanvl_series, qianfan_ocr_series,
     lfm2vl_series, rbdashmm_api_series_lmdeploy, interns1_series, insight_v_series, covt_series
 ]
 

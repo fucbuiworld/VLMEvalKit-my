@@ -136,7 +136,7 @@ class OpenAIWrapper(BaseAPI):
             if key is None:
                 key = env_key
             # api_base = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
-        elif 'ernie' in model:
+        elif 'ernie' in model or 'internvl' in model or 'kimi' in model.lower() or 'deepseek-ocr' in model.lower()  or 'qianfan' in model.lower():
             env_key = os.environ.get('BAIDU_API_KEY', '')
             if key is None:
                 key = env_key
