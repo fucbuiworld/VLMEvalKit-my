@@ -397,10 +397,26 @@ class end2end_evaluator():
         save_dict={}
         en_overall=[]
         ch_overall=[]
+        # Official OmniDocBench Overall formula:
+        # Overall = ((1 - Text_Edit_dist) * 100 + Formula_CDM + Table_TEDS) / 3
+        # Reference: https://github.com/opendatalab/OmniDocBench
+        text_edit_en = result_all["text_block"]["page"]["Edit_dist"].get("language: english", np.nan)
+        text_edit_ch = result_all["text_block"]["page"]["Edit_dist"].get("language: simplified_chinese", np.nan)
+        text_sim_en = (1 - text_edit_en) * 100
+        text_sim_ch = (1 - text_edit_ch) * 100
+        formula_edit_en = result_all["display_formula"]["page"]["Edit_dist"].get("language: english", np.nan)
+        formula_edit_ch = result_all["display_formula"]["page"]["Edit_dist"].get("language: simplified_chinese", np.nan)
+        formula_cdm_en = (1 - formula_edit_en) * 100  # CDM proxy: (1 - Edit_dist) * 100
+        formula_cdm_ch = (1 - formula_edit_ch) * 100
+        table_teds_en = result_all["table"]["page"]["TEDS"]["language: english"] * 100
+        table_teds_ch = result_all["table"]["page"]["TEDS"]["language: simplified_chinese"] * 100
+        overall_en = (text_sim_en + formula_cdm_en + table_teds_en) / 3
+        overall_ch = (text_sim_ch + formula_cdm_ch + table_teds_ch) / 3
+
         for category_type, metric in [("text_block", "Edit_dist"), ("display_formula", "Edit_dist"), ("display_formula", "CDM"), ("table", "TEDS"), ("table", "Edit_dist"), ("reading_order", "Edit_dist")]:
             if metric == 'CDM':
-                save_dict[category_type+'_'+metric+'_EN'] = '-'
-                save_dict[category_type+'_'+metric+'_CH'] = '-'
+                save_dict[category_type+'_'+metric+'_EN'] = round(formula_cdm_en, 3)
+                save_dict[category_type+'_'+metric+'_CH'] = round(formula_cdm_ch, 3)
             elif metric == "TEDS":
                 save_dict[category_type+'_'+metric+'_EN'] = result_all[category_type]["page"][metric]["language: english"] * 100
                 save_dict[category_type+'_'+metric+'_CH'] = result_all[category_type]["page"][metric]["language: simplified_chinese"] * 100
@@ -411,8 +427,10 @@ class end2end_evaluator():
                 en_overall.append(result_all[category_type]["page"][metric].get("language: english", np.nan))
                 ch_overall.append(result_all[category_type]["page"][metric].get("language: simplified_chinese",np.nan))
 
-        save_dict['overall_EN'] = sum(en_overall) / len(en_overall)
-        save_dict['overall_CH'] = sum(ch_overall) / len(ch_overall)
+        save_dict['overall_EN'] = round(overall_en, 3)
+        save_dict['overall_CH'] = round(overall_ch, 3)
+        save_dict['overall_vlmeval_EN'] = sum(en_overall) / len(en_overall)
+        save_dict['overall_vlmeval_CH'] = sum(ch_overall) / len(ch_overall)
         dict_list.append(save_dict)
         df = pd.DataFrame(dict_list,index=['end2end',]).round(3)
 
