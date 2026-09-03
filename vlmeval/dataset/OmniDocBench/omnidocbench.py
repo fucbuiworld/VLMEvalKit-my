@@ -73,6 +73,25 @@ class OmniDocBench(ImageBaseDataset):
         metrics_all=End2end_evaluator.score()
         metircs_table=Table_evalutor.score()
 
+        from vlmeval.tools import EXPORT_PER_SAMPLE
+        from vlmeval.smp import get_intermediate_file_path
+        sample_data = {}
+        for element in End2end_evaluator.dafault_metircs_dict.keys():
+            result_file = get_intermediate_file_path(
+                eval_file, f'_end2end_quick_match_{element}_result', 'json'
+            )
+            import os
+            if os.path.exists(result_file):
+                from vlmeval.smp import load
+                sample_data[element] = load(result_file)
+            
+            
+        if sample_data:
+            export_path = get_intermediate_file_path(eval_file, '_per_sample_results', 'xlsx')
+            EXPORT_PER_SAMPLE(eval_file, sample_data, export_path, dataset_type='omnidocbench')
+            
+    
+
         return metrics_all
 
 

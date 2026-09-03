@@ -689,3 +689,66 @@ def cli():
         logger.error('WARNING: command error!')
         logger.info(CLI_HELP_MSG)
         return
+    
+def EXPORT_PER_SAMPLE(pred_file, sample_data, output_path, dataset_type='omnidocbench'):
+    """Export per-sample prediction and score results to Excel.
+    
+    Args:
+        pred_file: path to prediction file (xlsx/pkl)
+        sample_data: per-sample result dict with metrics
+        output_path: output excel file path
+        dataset_type: type of dataset (omnidocbench, mcq, vqa, ...)
+    """
+    import pandas as pd
+    from vlmeval.smp import load, dump
+
+    if dataset_type == 'omnidocbench':
+        _export_omnidocbench(pred_file, sample_data, output_path)
+    else:
+        logger.warning(f'Per-sample export not implemented for dataset_type: {dataset_type}')
+
+def _export_omnidocbench(pred_file, sample_data, output_path):
+    """Export OmniDocBench per-sample results.
+    
+    sample_data structure: {
+        'text_block': [sample_list],
+        'display_formula': [sample_list],
+        'table': [sample_list],
+        'reading_order': [sample_list]
+    }
+    Each sample has: gt, pred, metric: {...}, img_id, ...
+    """
+    import pandas as pd
+    
+    all_rows = []
+    
+    for category_type, samples in sample_data.items():
+        for sample in samples:
+            row = {
+                'image': sample.get('img_id', ''),
+                'category_type': category_type,
+                'gt': sample.get('gt', ''),
+                'prediction': sample.get('pred', ''),
+            }
+            # Add all metrics
+            if 'metric' in sample:
+                for metric_name, metric_val in sample['metric'].items():
+                    row[metric_name] = metric_val
+            all_rows.append(row)
+    
+    df = pd.DataFrame(all_rows)
+    df = df.round(4)
+    
+    # Save to Excel with multiple sheets (one per category_type)
+    with pd.ExcelWriter(output_path, engine='xlsxwriter',
+                        engine_kwargs={'options': {'strings_to_formulas': False}}) as writer:
+        # All results in one sheet
+        df.to_excel(writer, sheet_name='all_samples', index=False)
+        
+        # One sheet per category_type
+        for cat in df['category_type'].unique():
+            cat_df = df[df['category_type'] == cat]
+            cat_df.to_excel(writer, sheet_name=cat[:31], index=False)
+    
+    logger.info(f'Per-sample results exported to: {output_path}')
+    logger.info(f'Total samples: {len(df)} ({len(df["category_type"].unique())} categories)')
