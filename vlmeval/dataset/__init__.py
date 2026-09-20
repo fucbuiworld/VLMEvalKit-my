@@ -65,6 +65,7 @@ from .image_vqa import (BMMR, CRPE, LENS, MMNIAH, AyaVisionBench, CoreCognition,
                         VizWiz, VLMsAreBiased, VTCBench, WildDocBenchmark, ZEROBench)
 from .image_yorn import ImageYORNDataset
 from .longdocurl import LongDocURL
+from .mapqa import MapQA
 from .longvideobench import LongVideoBench
 from .m3oralbench import M3oralBenchDataset
 from .m4bench import M4Bench
@@ -310,6 +311,7 @@ IMAGE_DATASET = [
     MMRarebenchDiagnosis, MMRarebenchTreatment, MMRarebenchCrossmodal, MMRarebenchExamination,
     MRareBenchDiagnosis, MRareBenchEvidenceVerif,
     BabyVision,
+    MapQA,
 ]
 
 # add by EASI team

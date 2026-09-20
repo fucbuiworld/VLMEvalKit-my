@@ -136,7 +136,7 @@ class OpenAIWrapper(BaseAPI):
             if key is None:
                 key = env_key
             # api_base = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
-        elif 'ernie' in model or 'internvl' in model or 'kimi' in model.lower() or 'deepseek-ocr' in model.lower()  or 'qianfan' in model.lower():
+        elif 'ernie' in model or 'internvl' in model or 'kimi' in model.lower() or 'deepseek-ocr' in model.lower()  or 'qianfan' in model.lower() or 'qwen' in model.lower():
             env_key = os.environ.get('BAIDU_API_KEY', '')
             if key is None:
                 key = env_key
@@ -319,8 +319,9 @@ class OpenAIWrapper(BaseAPI):
                 answer = resp_struct['choices'][0]['message']['content'].strip()
         except Exception as err:
             logger.error(f'{type(err)}: {err}')
-            if self.verbose:
-                logger.error(response.text if hasattr(response, 'text') else response)
+            # Always log the response text (truncated) to help diagnose API errors
+            resp_text = response.text if hasattr(response, 'text') else str(response)
+            logger.error(f'API Response (status={ret_code}): {resp_text[:500]}')
 
         return ret_code, answer, response
 

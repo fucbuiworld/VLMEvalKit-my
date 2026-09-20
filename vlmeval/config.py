@@ -897,6 +897,16 @@ api_models = {
         retry=3, 
         max_tokens=8000,
     ),
+    'ERNIE-4.5-Turbo-VL': partial(
+        api.GPT4V,
+        model='ernie-4.5-turbo-vl',
+        temperature=0,
+        retry=10,
+        wait=5,
+        max_tokens=4096,
+        api_base='https://qianfan.baidubce.com/v2/chat/completions',
+        key=os.environ.get('QIANFAN_API_KEY', ''),
+    ),
     'internvl3-38b-api': partial(
         api.GPT4V,
         model='internvl3-38b',
@@ -905,6 +915,16 @@ api_models = {
         max_tokens=4096,
         key=os.environ.get('BAIDU_API_KEY', ''),
     ), 
+    'Qwen3.5-35b-a3b': partial(
+        api.GPT4V,
+        model='qwen3.5-35b-a3b',
+        temperature=0,
+        retry=10,
+        wait=5,
+        max_tokens=4096,
+        api_base='https://qianfan.baidubce.com/v2/chat/completions',
+        key=os.environ.get('QIANFAN_API_KEY', ''),
+    ),
   "360zhinao3-vl":
     partial(
         api.GPT4V,
@@ -2461,12 +2481,14 @@ qianfanvl_series = {
     'Qianfan-VL-70B': partial(vlm.Qianfan_VL, model_path='baidu/Qianfan-VL-70B'),
     'Qianfan-VL-8B-api': partial(
         api.GPT4V,
-        model='qianfan-vl-8b',       
+        model='qianfan-vl-8b',
         temperature=0,
         retry=5,
         wait=10,
-        max_tokens=8192,             
+        max_tokens=8192,
         timeout=300,
+        api_base='https://qianfan.baidubce.com/v2/chat/completions',
+        key=os.environ.get('QIANFAN_API_KEY', ''),
     ),
 }
 

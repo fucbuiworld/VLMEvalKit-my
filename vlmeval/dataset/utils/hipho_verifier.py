@@ -42,31 +42,11 @@ FAIL_MSG = 'Failed to obtain answer via API.'
 
 
 def timeout(timeout_seconds: int = 10):
-    if os.name == "posix":
-        import signal
-
-        def decorator(func):
-
-            def handler(signum, frame):
-                raise TimeoutError("verify timed out!")
-
-            def wrapper(*args, **kwargs):
-                # Check if in main thread
-                if threading.current_thread() != threading.main_thread():
-                    # In subprocess/thread, execute function directly without signal
-                    return func(*args, **kwargs)
-
-                old_handler = signal.getsignal(signal.SIGALRM)
-                signal.signal(signal.SIGALRM, handler)
-                signal.alarm(timeout_seconds)
-                try:
-                    return func(*args, **kwargs)
-                finally:
-                    signal.alarm(0)
-                    signal.signal(signal.SIGALRM, old_handler)
-            return wrapper
-        return decorator
-
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
 
 # units mainly from MathQA
 unit_texts = [
